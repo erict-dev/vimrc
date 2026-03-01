@@ -1,26 +1,25 @@
+# zsh configuration for macOS
+
 # Aliases
-alias ls='ls -G' # colored directories for the ls command
+alias ls='ls -G' # colored directories
+alias claude-sandbox='docker run -it -p 3000:3000 -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY claude-sandbox'
+alias claude-sandbox-build='~/.claude-sandbox/build.sh'
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# NVM (Node Version Manager)
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-# Something to do with the prompt theme functionality
-fpath=($fpath "/Users/eric/.zfunctions")
+# Detect Homebrew prefix (works on both Apple Silicon and Intel Macs)
+BREW_PREFIX="$(brew --prefix 2>/dev/null)"
 
-# Set the prompt theme to typewritten, a lightweight zsh theme. With my preferences configured
-# Install instructions https://github.com/reobin/typewritten
-autoload -U promptinit; promptinit
-prompt typewritten
-export TYPEWRITTEN_PROMPT_LAYOUT="pure"
-export TYPEWRITTEN_CURSOR="block"
+# zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions
+[ -n "$BREW_PREFIX" ] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+export TERM=xterm-256color
 
-# Useful Plugin: https://github.com/zsh-users/zsh-autosuggestions
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-export TERM=xterm-256color # Fixes autosuggestion color along with manually setting ANSI black bright to a light gray
+# zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting
+# Must be at the end of .zshrc (before sourcing .zshrc.local)
+[ -n "$BREW_PREFIX" ] && source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# Useful Plugin https://github.com/zsh-users/zsh-syntax-highlighting
-# Must be at the end of .zshrc
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
+# Source local overrides (API keys, machine-specific settings)
+# Create ~/.zshrc.local for secrets and per-machine config (gitignored)
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

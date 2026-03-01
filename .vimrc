@@ -76,7 +76,6 @@ set softtabstop=2
 set shiftwidth=2
 set expandtab
 set number
-filetype indent on
 set relativenumber
 set linebreak
 
@@ -86,9 +85,6 @@ set list
 
 " Make the active split more obvious by making the status bar lighter
 hi StatusLine   ctermfg=15  guifg=#ffffff ctermbg=239 guibg=#4e4e4e cterm=bold gui=bold
-
-" Set relative filepath in status bar
-set statusline+=%f
 
 " Search config, highlighting, show match as I'm typing
 set showmatch
@@ -122,17 +118,9 @@ set splitbelow
 " existing tab if it is already open
 set switchbuf+=usetab,newtab
 
-" Config to search current working dir and ignore node_modules
-set path+=**
+" Ignore node_modules in file searches
 set wildignore+=**/node_modules/**
 set wildmenu
-
-" Cleanup netrw default vim file browser
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-let g:netrw_winsize = 25
 
 " Turn off auto-indent when pasting in insert mode
 let &t_SI .= "\<Esc>[?2004h"
@@ -161,7 +149,7 @@ noremap <C-l> <C-w>l
 vnoremap <C-c> :w !pbcopy<CR><CR>
 
 " ======================================
-" ========= Plugin Enhancements =========
+" ========= Plugin Enhancements ========
 " ======================================
 
 " ===== CoC.nvim Config =====
@@ -205,7 +193,6 @@ endif
 " ignore node_modules and other files when using ctrl-p
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|\.git$\'
 
-
 " Bind F to :NERDTreeFind which finds the current file in the tree.
 nnoremap F :NERDTreeFind<CR>
 
@@ -213,26 +200,19 @@ nnoremap F :NERDTreeFind<CR>
 " ========Javascript Specific ==========
 " ======================================
 
-" Typescript Syntax on tsx files
-augroup SyntaxSettings
+" Filetype detection for jsx/tsx
+augroup JsxTsxSyntaxSettings
   autocmd!
   autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
-augroup END
-
-" Syntax on jsx files
-augroup SyntaxSettings
-  autocmd!
   autocmd BufNewFile,BufRead *.jsx set filetype=javascriptreact
 augroup END
 
 " for jsx linting to be enabled in regular .js files
 let g:jsx_ext_required = 0
 
-" gf commmand (go to file) working for node_module ES6 imports... Amazing...
-" Careful that it could break other languages, but unlikely because I think it
-" just works as a fallback mechanism, so at worst doing gf in python if it's
-" not importing from a proper relative path for example would come back as 'file not found'.
-set path=.,src,$PWD/**,node_nodules
+" gf command (go to file) working for node_modules ES6 imports
+" Works as a fallback, so at worst in other languages gf returns 'file not found'.
+set path=.,src,$PWD/**,node_modules
 set suffixesadd=.js,.jsx,.tsx
 " allows @ to be recognized as a character
 set isfname+=@-@
@@ -248,3 +228,5 @@ function! LoadMainNodeModule(fname)
 endfunction
 set includeexpr=LoadMainNodeModule(v:fname)
 
+" Enable Enter to select autocompletion
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>"
